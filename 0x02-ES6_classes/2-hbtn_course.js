@@ -5,9 +5,9 @@ export default class HolbertonCourse {
    * @param {Array} students - The students in the course.
    */
   constructor(name, length, students) {
-    this._name = name;
-    this._length = length;
-    this._students = students;
+    this.name = name;
+    this.length = length;
+    this.students = students;
   }
 
   /**
