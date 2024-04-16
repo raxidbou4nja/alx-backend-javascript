@@ -1,9 +1,8 @@
 export default function createInt32TypedArray(length, position, value) {
-  if (position < length) {
-    const buffer = new ArrayBuffer(4 * length);
-    const view = new Int32Array(buffer);
-    view[position] = value;
-    return view;
+  if (position >= length) {
+    throw new Error('Position outside range');
   }
-  return 'Position outside range';
+  const buf = new DataView(new ArrayBuffer(length), 0, length);
+  buf.setInt32(position, value);
+  return buf;
 }
