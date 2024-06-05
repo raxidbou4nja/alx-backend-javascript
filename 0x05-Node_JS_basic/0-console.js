@@ -1,13 +1,10 @@
 /**
- * Prints a message to the console.
- * @param {string} message - The message to be printed.
- * @returns {void}
+ * Displays a message on the STDOUT.
+ * @param {String} msg The message to display.
+ * @author Bezaleel Olakunori <https://github.com/B3zaleel>
  */
-function printMessage(message) {
-    console.log(message);
-}
+const displayMessage = (msg) => {
+  console.log(msg);
+};
 
-/**
- * Exports the printMessage function.
- */
-module.exports = printMessage;
+module.exports = displayMessage;
