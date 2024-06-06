@@ -1,99 +1,53 @@
-/* eslint-disable jest/expect-expect */
-const assert = require('assert');
-const http = require('http');
+const request = require('request');
+const { expect } = require('chai');
 
-// Set up the endpoint URLs
-const BASE_URL = 'http://localhost:7866';
-const LOGIN_URL = `${BASE_URL}/login`;
-const PAYMENTS_URL = `${BASE_URL}/available_payments`;
+describe('API integration test', () => {
+  const API_URL = 'http://localhost:7865';
 
-// Test the /login endpoint
-describe('/login', () => {
-  it('should return a welcome message with the username', () => new Promise((done) => {
-    // Define the request payload
-    const payload = JSON.stringify({ userName: 'john_doe' });
-
-    // Set up the request options
-    const options = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      url: LOGIN_URL,
-      body: payload,
-    };
-
-    // Send the request
-    const req = http.request(options, (res) => {
-      let data = '';
-
-      // Set up the response listener
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
-
-      // Set up the end listener
-      res.on('end', () => {
-        // Parse the response body
-        const body = JSON.parse(data);
-
-        // Check the status code
-        assert.strictEqual(res.statusCode, 200);
-
-        // Check the response message
-        assert.strictEqual(body.message, 'Welcome john_doe');
-
-        // Done
-        done();
-      });
+  it('GET / returns correct response', (done) => {
+    request.get(`${API_URL}/`, (_err, res, body) => {
+      expect(res.statusCode).to.be.equal(200);
+      expect(body).to.be.equal('Welcome to the payment system');
+      done();
     });
+  });
 
-    // Send the request payload
-    req.write(payload);
-
-    // End the request
-    req.end();
-  }));
-});
-
-// Test the /available_payments endpoint
-describe('/available_payments', () => {
-  it('should return the list of available payments', () => new Promise((done) => {
-    // Set up the request options
-    const options = {
-      method: 'GET',
-      url: PAYMENTS_URL,
-    };
-
-    // Send the request
-    const req = http.request(options, (res) => {
-      let data = '';
-
-      // Set up the response listener
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
-
-      // Set up the end listener
-      res.on('end', () => {
-        // Parse the response body
-        const body = JSON.parse(data);
-
-        // Check the status code
-        assert.strictEqual(res.statusCode, 200);
-
-        // Check the response structure
-        assert.deepStrictEqual(body, {
-          payment_methods: {
-            credit_cards: true,
-            paypal: false,
-          },
-        });
-
-        // Done
-        done();
-      });
+  it('GET /cart/:id returns correct response for valid :id', (done) => {
+    request.get(`${API_URL}/cart/47`, (_err, res, body) => {
+      expect(res.statusCode).to.be.equal(200);
+      expect(body).to.be.equal('Payment methods for cart 47');
+      done();
     });
+  });
 
-    // End the request
-    req.end();
-  }));
+  it('GET /cart/:id returns 404 response for negative number values in :id', (done) => {
+    request.get(`${API_URL}/cart/-47`, (_err, res, _body) => {
+      expect(res.statusCode).to.be.equal(404);
+      done();
+    });
+  });
+
+  it('GET /cart/:id returns 404 response for non-numeric values in :id', (done) => {
+    request.get(`${API_URL}/cart/d200-44a5-9de6`, (_err, res, _body) => {
+      expect(res.statusCode).to.be.equal(404);
+      done();
+    });
+  });
+
+  it('POST /login returns valid response', (done) => {
+    request.post(`${API_URL}/login`, {json: {userName: 'Pinkbrook'}}, (_err, res, body) => {
+      expect(res.statusCode).to.be.equal(200);
+      expect(body).to.be.equal('Welcome Pinkbrook');
+      done();
+    });
+  });
+
+  it('GET /available_payments returns valid response', (done) => {
+    request.get(`${API_URL}/available_payments`, (_err, res, body) => {
+      expect(res.statusCode).to.be.equal(200);
+      expect(JSON.parse(body))
+        .to.be.deep.equal({payment_methods: {credit_cards: true, paypal: false}});
+      done();
+    });
+  });
 });
