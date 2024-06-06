@@ -1,30 +1,12 @@
 const { expect } = require('chai');
-const sinon = require('sinon');
-const Utils = require('./utils');
-const sendPaymentRequestToApi = require('./6-payment_token');
+const getPaymentTokenFromAPI = require('./6-payment_token');
 
-describe('sendPaymentRequestToApi', () => {
-    let stub;
-    
-    beforeEach(() => {
-        stub = sinon.stub(Utils, 'calculateNumber').returns(10);
-    });
-    
-    afterEach(() => {
-        stub.restore();
-    });
-    
-    it('sendPaymentRequestToApi uses the calculateNumber method of Utils', () => {
-        const spy = sinon.spy(console, 'log');
-    
-        sendPaymentRequestToApi(100, 20);
-    
-        sinon.assert.calledOnce(stub);
-        sinon.assert.calledWith(stub, 'SUM', 100, 20);
-    
-        sinon.assert.calledOnce(spy);
-        sinon.assert.calledWith(spy, 'The total is: 10');
-    
-        spy.restore();
-    });
-    });
+describe('getPaymentTokenFromAPI', () => {
+  it('getPaymentTokenFromAPI(success), where success == true', (done) => {
+    getPaymentTokenFromAPI(true)
+      .then((res) => {
+        expect(res).to.deep.equal({data: 'Successful response from the API'});
+        done();
+      });
+  });
+});
