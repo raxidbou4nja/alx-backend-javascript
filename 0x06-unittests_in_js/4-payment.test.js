@@ -22,7 +22,7 @@ describe('sendPaymentRequestToApi', () => {
     sinon.assert.calledWith(stub, 'SUM', 100, 20);
 
     sinon.assert.calledOnce(spy);
-    sinon.assert.calledWith(spy, 'The total is: 120');
+    sinon.assert.calledWith(spy, 'The total is: 10');
 
     spy.restore();
   });
